@@ -1,0 +1,53 @@
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS base
+
+# Build spotifyd with pulseaudio_backend
+FROM ubuntu:18.04 AS spotifyd-build
+RUN apt-get update \
+	&& apt-get -y -qq install \
+	git \
+	rustc \
+	cargo \
+	libasound2-dev \
+	libssl-dev \
+	pkg-config
+
+WORKDIR /spotifyd
+RUN apt-get update \
+	&& apt-get -y -qq install libpulse-dev \
+	&& git clone https://github.com/Spotifyd/spotifyd . \
+	&& cargo build --release --features "pulseaudio_backend"
+
+# Build Spoofy in alpine
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS spoofy-publish
+WORKDIR /app
+COPY ./src/ .
+WORKDIR /app/Spoofy
+RUN dotnet restore
+
+FROM base AS final
+
+# Install libs
+RUN apt-get update \
+	&& apt-get -y -qq install \
+	dbus-x11 \
+	pulseaudio \
+	pulseaudio-utils \
+	libopus0 \
+	libopus-dev \
+	libsodium23 \ 
+	libsodium-dev \
+	cron
+
+COPY --from=spoofy-publish /app/Spoofy /app
+COPY --from=spotifyd-build /spotifyd/target/release/spotifyd /usr/bin/spotifyd
+
+COPY ./scripts/ /run/scripts
+COPY conf/pulseaudio.pa /etc/pulse/default.pa
+COPY conf/pulseaudio.conf /etc/pulse/daemon.conf
+COPY entrypoint.sh /run/entrypoint.sh
+
+RUN chmod +x /run/entrypoint.sh
+
+WORKDIR /app
+ENTRYPOINT ["bash", "/run/entrypoint.sh"]
+CMD ["dotnet", "watch", "run", "-p", "Spoofy"]

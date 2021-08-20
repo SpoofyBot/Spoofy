@@ -1,0 +1,43 @@
+#!/usr/bin/pulseaudio -nF
+
+# This startup script is used only if PulseAudio is started per-user
+# (i.e. not in system mode)
+
+.fail
+
+### Load several protocols
+.ifexists module-esound-protocol-unix.so
+load-module module-esound-protocol-unix
+.endif
+load-module module-native-protocol-unix
+
+### Automatically restore the default sink/source when changed by the user
+### during runtime
+### NOTE: This should be loaded as early as possible so that subsequent modules
+### that look up the default sink/source get the right value
+load-module module-default-device-restore
+
+### Honour intended role device property
+load-module module-intended-roles
+
+### Automatically suspend sinks/sources that become idle for too long
+#load-module module-suspend-on-idle
+
+### If autoexit on idle is enabled we want to make sure we only quit
+### when no local session needs us anymore.
+.ifexists module-console-kit.so
+load-module module-console-kit
+.endif
+.ifexists module-systemd-login.so
+load-module module-systemd-login
+.endif
+
+### Modules to allow autoloading of filters (such as echo cancellation)
+### on demand. module-filter-heuristics tries to determine what filters
+### make sense, and module-filter-apply does the heavy-lifting of
+### loading modules and rerouting streams.
+load-module module-filter-heuristics
+load-module module-filter-apply
+
+# Create Spoofy sink
+load-module module-null-sink sink_name=Spoofy

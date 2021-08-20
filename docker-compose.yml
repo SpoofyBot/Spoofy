@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  spoofy:
+    container_name: spoofy
+    build:
+      context: ./Spoofy
+      dockerfile: Dockerfile
+    volumes:
+      - ./spotifyd.conf:/etc/spotifyd.conf
+    secrets:
+      - spotify-passwd
+
+secrets:
+  spotify-passwd:
+    file: ./secrets/spotify-passwd
