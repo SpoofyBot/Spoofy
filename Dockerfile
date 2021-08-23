@@ -65,10 +65,9 @@ COPY ./scripts/ /run/scripts
 COPY conf/pulseaudio.pa /etc/pulse/default.pa
 COPY conf/pulseaudio.conf /etc/pulse/daemon.conf
 COPY conf/spotifyd.conf /etc/spotifyd.conf
-COPY entrypoint.sh /run/entrypoint.sh
 
 RUN chmod +x /run/entrypoint.sh
 
 WORKDIR /app
-ENTRYPOINT ["bash", "/run/entrypoint.sh"]
+ENTRYPOINT ["bash", "/run/scripts/entrypoint.sh"]
 CMD ["yarn", "start"]
