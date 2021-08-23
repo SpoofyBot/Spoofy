@@ -11,22 +11,12 @@ jobs:
     runs-on: ubuntu-latest # The type of runner that the job will run on
 
     steps:
-      - id: _regex_repo_name # Remove 'ositemindex.' in the repo name
-        uses: frabert/replace-string-action@v2.0
+      - name: Login to ghcr registry
+        uses: docker/login-action@v1
         with:
-          pattern: '^\w+.'
-          string: ${{ github.event.repository.name }}
-          replace-with: ""
-
-      - id: repo_name # Lowercase repo name
-        uses: ASzc/change-string-case-action@v1
-        with:
-          string: ${{ steps._regex_repo_name.outputs.replaced }}
-
-      - id: repo_owner # Lowercase repo owner
-        uses: ASzc/change-string-case-action@v1
-        with:
-          string: ${{ github.repository_owner }}
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -39,18 +29,11 @@ jobs:
         with:
           setAllVars: false
 
-      - name: Login to ghcr registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
       - name: Build and push docker image
         uses: docker/build-push-action@v2
         with:
           push: true # Will only build if this is not here
           context: .
           tags: |
-            ghcr.io/${{ steps.repo_owner.outputs.lowercase }}/${{ steps.repo_name.outputs.lowercase }}:latest
-            ghcr.io/${{ steps.repo_owner.outputs.lowercase }}/${{ steps.repo_name.outputs.lowercase }}:${{ steps.nbgv.outputs.SimpleVersion }}
+            ghcr.io/twinki14/spoofy:latest
+            ghcr.io/twinki14/spoofy:${{ steps.nbgv.outputs.SimpleVersion }}
