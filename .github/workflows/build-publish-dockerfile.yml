@@ -1,0 +1,56 @@
+name: Build and publish docker image
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+  repository_dispatch:
+    types: [build-publish]
+
+jobs:
+  build-publish:
+    runs-on: ubuntu-latest # The type of runner that the job will run on
+
+    steps:
+      - id: _regex_repo_name # Remove 'ositemindex.' in the repo name
+        uses: frabert/replace-string-action@v2.0
+        with:
+          pattern: '^\w+.'
+          string: ${{ github.event.repository.name }}
+          replace-with: ""
+
+      - id: repo_name # Lowercase repo name
+        uses: ASzc/change-string-case-action@v1
+        with:
+          string: ${{ steps._regex_repo_name.outputs.replaced }}
+
+      - id: repo_owner # Lowercase repo owner
+        uses: ASzc/change-string-case-action@v1
+        with:
+          string: ${{ github.repository_owner }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+
+      - name: Set version
+        uses: dotnet/nbgv@v0.4
+        id: nbgv
+        with:
+          setAllVars: false
+
+      - name: Login to ghcr registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Build and push docker image
+        uses: docker/build-push-action@v2
+        with:
+          push: true # Will only build if this is not here
+          context: .
+          tags: |
+            ghcr.io/${{ steps.repo_owner.outputs.lowercase }}/${{ steps.repo_name.outputs.lowercase }}:latest
+            ghcr.io/${{ steps.repo_owner.outputs.lowercase }}/${{ steps.repo_name.outputs.lowercase }}:${{ steps.nbgv.outputs.SimpleVersion }}
