@@ -366,3 +366,7 @@ FodyWeavers.xsd
 #IDE metadata
 **.idea
 **.idea/**
+
+#Paket dependency manager
+.paket/
+paket-files/

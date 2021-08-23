@@ -1,15 +1,24 @@
 version: "3.8"
 services:
   spoofy:
-    container_name: spoofy
+    container_name: Spoofy
+    tty: true
     build:
-      context: ./Spoofy
+      context: .
       dockerfile: Dockerfile
-    volumes:
-      - ./spotifyd.conf:/etc/spotifyd.conf
     secrets:
+      - spotify-user
       - spotify-passwd
+      - discord-token
+    deploy:
+      resources:
+        limits:
+          memory: 128M
 
 secrets:
+  spotify-user:
+    file: ./secrets/spotify-user
   spotify-passwd:
     file: ./secrets/spotify-passwd
+  discord-token:
+    file: ./secrets/discord-token
