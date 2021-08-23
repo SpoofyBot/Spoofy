@@ -3,7 +3,7 @@ require('module-alias/register');
 const Pulse = require('pulseaudio2');
 const { Client } = require('discord.js');
 const prism = require('prism-media');
-const config = require('./config.json');
+const fs = require('fs')
 const {
 	NoSubscriberBehavior,
 	StreamType,
@@ -15,10 +15,12 @@ const {
 	joinVoiceChannel,
 } = require('@discordjs/voice');
 
+
+const maxTransmissionGap = 1000
 const player = createAudioPlayer({
 	behaviors: {
-		noSubscriber: NoSubscriberBehavior.Play,
-		maxMissedFrames: Math.round(config.maxTransmissionGap / 20),
+		noSubscriber: NoSubscriberBehavior.Pause,
+		maxMissedFrames: Math.round(maxTransmissionGap / 20),
 	},
 });
 
@@ -99,4 +101,14 @@ client.on('messageCreate', async (message) => {
 	}
 });
 
-void client.login(config.token);
+const fs = require('fs')
+var token = ""
+
+try {
+	token = fs.readFileSync('/run/secrets/discord-token', 'utf8')
+} catch (err) {
+  console.error(err)
+}
+
+
+void client.login(token);
