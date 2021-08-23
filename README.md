@@ -1,13 +1,13 @@
 # :whale2: Spoofy
 
-Spoofy is a Discord bot that captures local Spotify audio broadcasted from a headless Spotify client known as spotifyd, and uploads it to a Discord voice channel
+Spoofy is a Discord bot that captures local Spotify audio broadcasted from a [Spotify client daemon known as spotifyd](https://github.com/Spotifyd/spotifyd), and uploads it to a Discord voice channel
 
-Using PulseAudio in an Alpine based image, spotifyd pipes playback from Spotify to a PulseAudio sink. That sink is captured In a Node based application, encoded with opus-codec, and sent to an active voice connection with the help of discordjs
+Using PulseAudio in an Alpine based image, [spotifyd](https://github.com/Spotifyd/spotifyd) pipes playback from Spotify to a PulseAudio sink. That sink is captured In a Node based application, encoded with [opus-codec](https://opus-codec.org/), and sent to an active voice connection with the help of [discordjs](https://discord.js.org/#/)
 
 ## :fox_face: Flex
 
-- ~160Mb Alpine image
-- ~80-150Mb memory overhead
+- 160Mb Alpine image
+- 80-150Mb memory overhead
 - < 3000ms Spotify Audio -> Discord Voice Latency
 - Low CPU Overhead (2% on a 5600x)
 - Control with any Spotify player the account has access to
@@ -27,9 +27,10 @@ Using PulseAudio in an Alpine based image, spotifyd pipes playback from Spotify 
 
 ## :clipboard: Notes
 
-- Only one active connection is allowed at any given time, Spoofy cannot run multiple Spoify playback streams from a single Spotify account. To avoid needing insecure credential access, Spoofy is designed as a tiny container. KISS.
-- This bot could break Discords ToS, use at your own discretion
+- **Only one active connection is allowed at any given time**, Spoofy cannot run multiple Spoify playback streams from a single Spotify account. To avoid needing insecure credential access, Spoofy is designed as a tiny container. KISS.
+- **This bot could break Discords ToS**, use at your own discretion
 - You can use a Spotify client to control Spotify, everything is reflected. Just be sure to select the Spoofy device in Spotify
+- If no user is in the same channel as Spoofy, Spoofy will disconnect
 
 # :whale: Deploying
 
