@@ -39,6 +39,7 @@ RUN apk -U --no-cache add \
 	curl
 
 ENV NODE_ENV=production
+
 COPY ./src /app/
 
 # Install node-pune
@@ -66,7 +67,7 @@ COPY conf/pulseaudio.pa /etc/pulse/default.pa
 COPY conf/pulseaudio.conf /etc/pulse/daemon.conf
 COPY conf/spotifyd.conf /etc/spotifyd.conf
 
-RUN chmod +x /run/entrypoint.sh
+RUN chmod +x /run/scripts/entrypoint.sh
 
 WORKDIR /app
 ENTRYPOINT ["bash", "/run/scripts/entrypoint.sh"]

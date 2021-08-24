@@ -2,7 +2,6 @@ version: "3.8"
 services:
   spoofy:
     container_name: Spoofy
-    tty: true
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,7 +12,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 128M
+          memory: 256MB
 
 secrets:
   spotify-user:
