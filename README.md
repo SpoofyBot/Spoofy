@@ -39,8 +39,8 @@ Using PulseAudio in an Alpine based image, [spotifyd](https://github.com/Spotify
 - A Docker host
 - [A registered Discord Application](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
   - Needs `bot` and `applications.commands` scopes
-  - Use Permission integer `2184195136`
-  - Example invite URL: `https://discord.com/api/oauth2/authorize?client_id=<client_id>&permissions=2184195136&scope=bot%20applications.commands`
+  - Use Permission integer `36702272`
+  - Example invite URL: `https://discord.com/api/oauth2/authorize?client_id=<client_id>&permissions=36702272&scope=bot%20applications.commands`
 - A Spotify account, with or without premium
 
 ## Secrets

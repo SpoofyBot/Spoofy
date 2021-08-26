@@ -46,7 +46,7 @@ COPY ./src /app/
 RUN curl -sf https://gobinaries.com/tj/node-prune | sh
 
 WORKDIR /app
-RUN ["yarn", "install", "--flat"]
+RUN ["yarn", "install"]
 RUN [ "node-prune" ]
 
 FROM base AS final
