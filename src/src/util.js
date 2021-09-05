@@ -1,7 +1,12 @@
-const { entersState, VoiceConnectionStatus, joinVoiceChannel, getVoiceConnections } = require('@discordjs/voice');
-const signale = require('signale');
+import {
+  entersState,
+  VoiceConnectionStatus,
+  joinVoiceChannel,
+  getVoiceConnections,
+} from '@discordjs/voice';
+import signale from 'signale';
 
-module.exports.connectToChannel = async function connectToChannel(channel) {
+export async function connectToChannel(channel) {
   const connection = joinVoiceChannel({
     channelId: channel.id,
     guildId: channel.guild.id,
@@ -15,9 +20,9 @@ module.exports.connectToChannel = async function connectToChannel(channel) {
     connection.destroy();
     throw error;
   }
-};
+}
 
-module.exports.disconnectFromChannels = async function disconnectFromChannels() {
+export async function disconnectFromChannels() {
   var connections = getVoiceConnections();
   signale.log(connections.size);
   for (var [id, conn] in connections.entries()) {
@@ -26,4 +31,4 @@ module.exports.disconnectFromChannels = async function disconnectFromChannels() 
     await entersState(conn, VoiceConnectionStatus.Disconnected, 30_000);
     conn.destroy();
   }
-};
+}

@@ -1,8 +1,4 @@
-apk -U --no-cache add git
-
-apk update
-
-apk -U --no-cache add \
+apk update && apk -U --no-cache add \
 	libtool \
 	pulseaudio \
 	pulseaudio-utils \
@@ -17,4 +13,5 @@ apk -U --no-cache add \
 	g++ \
 	make \
 	curl \
-	nano
+	nano \
+	git

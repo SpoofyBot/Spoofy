@@ -1,14 +1,14 @@
-const signale = require('signale');
-const { opus } = require('prism-media');
-const Pulse = require('pulseaudio2');
-const {
+import Pulse from 'pulseaudio2';
+import signale from 'signale';
+import { opus } from 'prism-media';
+import {
   NoSubscriberBehavior,
   StreamType,
   createAudioPlayer,
   createAudioResource,
   AudioPlayerStatus,
   AudioPlayer,
-} = require('@discordjs/voice');
+} from '@discordjs/voice';
 
 const opts = {
   frameSize: 960,
@@ -17,10 +17,10 @@ const opts = {
   format: 's16le',
   flags: 'adjust_latency',
   latency: 100,
-  maxTransmissionGap: 1000,
+  maxTransmissionGap: 500,
 };
 
-module.exports = class PulsePlayer extends AudioPlayer {
+export default class PulsePlayer extends AudioPlayer {
   static playerInstance = null;
 
   constructor() {
@@ -33,7 +33,11 @@ module.exports = class PulsePlayer extends AudioPlayer {
       }),
     );
 
-    this.encoderOptions = { frameSize: opts.frameSize, channels: opts.channels, rate: opts.rate };
+    this.encoderOptions = {
+      frameSize: opts.frameSize,
+      channels: opts.channels,
+      rate: opts.rate,
+    };
     this.recorderOptions = {
       channels: opts.channels,
       rate: opts.rate,
@@ -43,8 +47,16 @@ module.exports = class PulsePlayer extends AudioPlayer {
     };
 
     this.pulse = new Pulse({ client: 'spoofy' });
+    this.pulse.on('error', (err) => {
+      process.emit('exit-discord', err);
+    });
+
     super.on('stateChange', (oldState, newState) => {
-      signale.info("AudioPlayer state changed from '%s' to '%s'", oldState.status, newState.status);
+      signale.info(
+        "AudioPlayer state changed from '%s' to '%s'",
+        oldState.status,
+        newState.status,
+      );
       if (newState.status === AudioPlayerStatus.Idle) {
         this.destroyCapture();
       }
@@ -68,9 +80,9 @@ module.exports = class PulsePlayer extends AudioPlayer {
   }
 
   static getPlayer() {
-    if (this.playerInstance === null) {
+    if (this.playerInstance == null) {
       this.playerInstance = new this();
     }
     return this.playerInstance;
   }
-};
+}

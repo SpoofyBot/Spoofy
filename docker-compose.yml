@@ -4,7 +4,6 @@ services:
     container_name: Spoofy
     build:
       context: .
-      dockerfile: Dockerfile
     secrets:
       - spotify-user
       - spotify-passwd

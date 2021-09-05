@@ -1,0 +1,2 @@
+#!/usr/bin/execlineb -P
+pulseaudio --exit-idle-time=-1 --log-level=error

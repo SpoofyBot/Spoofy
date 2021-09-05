@@ -1,74 +1,68 @@
 FROM node:16-alpine3.14 as base
 
-FROM alpine:3.14 AS spotifyd-build
-RUN apk -U --no-cache add \
-	git \
-	build-base \
-	autoconf \
-	automake \
-	libtool \
-	alsa-lib-dev \
-	libdaemon-dev \
-	openssl-dev \
-	pulseaudio-dev \
-	libconfig-dev \
-	libstdc++ \
-	gcc \
-	rust \
-	cargo
-
-WORKDIR /spotifyd
-RUN git clone https://github.com/Spotifyd/spotifyd . \
-	&& cargo build --release --features "pulseaudio_backend"
-
+# Build Spoofy
 FROM node:16-alpine3.14 as spoofy-build
 RUN apk -U --no-cache add \
-	libtool \
-	pulseaudio \
-	pulseaudio-utils \
-	pulseaudio-dev \
-	alsa-lib-dev \
-	libconfig-dev \
-	opusfile \
-	dbus-x11 \
-	npm \
-	cmake \
-	python3 \
-	g++ \
-	make \
-	curl
-
-ENV NODE_ENV=production
+    libtool \
+    pulseaudio \
+    pulseaudio-dev \
+    alsa-lib-dev \
+    libconfig-dev \
+    opusfile \
+    dbus-x11 \
+    npm \
+    cmake \
+    python3 \
+    g++ \
+    make \
+    curl
 
 COPY ./src /app/
+WORKDIR /app
 
 # Install node-pune
 RUN curl -sf https://gobinaries.com/tj/node-prune | sh
 
-WORKDIR /app
+ENV NODE_ENV=production
 RUN ["yarn", "install"]
-RUN [ "node-prune" ]
+RUN ["node-prune"]
+RUN ["npx", "tsup"]
 
+# Remove src dir, no longer needed after using tsup to build
+RUN rm -rf src
+
+# Final image
 FROM base AS final
 
-# Install libs
-RUN apk -U --no-cache add \
-	libtool \
-	pulseaudio \
-	dbus-x11
-
 ENV NODE_ENV=production
+ARG S6_OVERLAY_RELEASE=https://github.com/just-containers/s6-overlay/releases/latest/download/s6-overlay-amd64.tar.gz
+ARG LIBRESPOT_JAVA_RELEASE=https://github.com/librespot-org/librespot-java/releases/download/v1.6.1/librespot-api-1.6.1.jar
 
-COPY --from=spotifyd-build /spotifyd/target/release/spotifyd /usr/bin/spotifyd
+# Copy Spoofy
+RUN apk -U --no-cache add \
+    libtool \
+    pulseaudio \
+    dbus-x11
 COPY --from=spoofy-build /app/ /app
 
-COPY ./scripts/ /run/scripts
-COPY conf/pulseaudio.pa /etc/pulse/default.pa
-COPY conf/pulseaudio.conf /etc/pulse/daemon.conf
-COPY conf/spotifyd.conf /etc/spotifyd.conf
+# Install librespot-java
+ADD ${LIBRESPOT_JAVA_RELEASE} /tmp/librespot-api.jar
+RUN apk -U --no-cache add openjdk8-jre
+# Convert jar into an easy executable
+RUN echo "#!/usr/bin/java -jar" > /bin/librespot-api \
+    && cat /tmp/librespot-api.jar >> /bin/librespot-api \
+    && chmod +x /bin/librespot-api \
+    && rm /tmp/librespot-api.jar
 
-RUN chmod +x /run/scripts/entrypoint.sh
+# Install s6-overlay
+ADD ${S6_OVERLAY_RELEASE} /tmp/s6overlay.tar.gz
+RUN apk upgrade --update --no-cache \
+    && rm -rf /var/cache/apk/* \
+    && tar xzf /tmp/s6overlay.tar.gz -C / \
+    && rm /tmp/s6overlay.tar.gz
 
-WORKDIR /app
-ENTRYPOINT ["bash", "/run/scripts/entrypoint.sh"]
-CMD ["yarn", "start"]
+COPY ./etc/ /etc/
+RUN chmod 777 /etc/services.d/spoofy/run
+
+WORKDIR /
+ENTRYPOINT ["/init"]

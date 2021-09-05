@@ -1,6 +1,8 @@
-const signale = require('signale');
-const { readFileSync } = require('fs');
-const { GCommandsClient } = require('gcommands');
+import path from 'path';
+import Spotify from './spotify';
+import signale from 'signale';
+import { readFileSync } from 'fs';
+import { GCommandsClient } from 'gcommands';
 
 var token = '';
 try {
@@ -9,10 +11,18 @@ try {
   signale.error(err);
 }
 
-const client = new GCommandsClient({
+//console.log('asd');
+
+signale.config({
+  displayFilename: true,
+  displayTimestamp: true,
+  displayDate: false,
+});
+
+var client = new GCommandsClient({
   intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_VOICE_STATES'],
-  cmdDir: 'commands/',
-  eventDir: 'events/',
+  cmdDir: path.join(__dirname, 'commands'),
+  //eventDir: 'events/',
   caseSensitiveCommands: false, // true or false | whether to match the commands' caps
   caseSensitivePrefixes: false, // true or false | whether to match the prefix in message commands
   unkownCommandMessage: false, // true or false | send unkownCommand Message
@@ -26,9 +36,19 @@ const client = new GCommandsClient({
 });
 
 client.on('debug', signale.debug); // warning | this also enables the default discord.js debug logging
-client.on('log', signale.log);
+client.on('log', signale.info);
 client.on('ready', () => {
   signale.success('Spoofy is ready!');
+});
+
+client.addListener('shutdown', (err) => {
+  signale.error(err);
+  client.destroy();
+  process.exit(1);
+});
+
+process.addListener('exit-discord', (err) => {
+  client.emit('shutdown', err);
 });
 
 client.login(token);

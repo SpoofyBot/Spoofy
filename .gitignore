@@ -363,10 +363,9 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-#IDE metadata
+# IDE metadata
 **.idea
 **.idea/**
 
-#Paket dependency manager
-.paket/
-paket-files/
+# Build files
+**dist/

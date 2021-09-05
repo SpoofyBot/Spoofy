@@ -1,0 +1,8 @@
+#!/usr/bin/execlineb
+backtick USER { head -n 1 /run/secrets/spotify-user }
+backtick PASSWD { head -n 1 /run/secrets/spotify-passwd }
+
+importas user USER
+importas passwd PASSWD
+
+librespot-api --auth.username=$user --auth.password=$passwd --conf-file=/etc/librespot.toml

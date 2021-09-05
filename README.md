@@ -1,29 +1,29 @@
 # :whale2: Spoofy
 
-Spoofy is a Discord bot that captures local Spotify audio broadcasted from a [Spotify client daemon known as spotifyd](https://github.com/Spotifyd/spotifyd), and uploads it to a Discord voice channel
+Spoofy is a Discord bot that captures local Spotify audio broadcasted from a local instance of [librespot-java](https://github.com/librespot-org/librespot-java), and transmits it to a connected Discord voice channel
 
-Using PulseAudio in an Alpine based image, [spotifyd](https://github.com/Spotifyd/spotifyd) pipes playback from Spotify to a PulseAudio sink. That sink is captured In a Node based application, encoded with [opus-codec](https://opus-codec.org/), and sent to an active voice connection with the help of [discordjs](https://discord.js.org/#/)
+Using PulseAudio in an Alpine based image, [librespot-java](https://github.com/librespot-org/librespot-java) pipes playback from the [Spotify playback API](https://developer.spotify.com/documentation/web-playback-sdk/) to a virtual PulseAudio sink. That sink is captured in a Nodejs based application,encoded with [opus-codec](https://opus-codec.org/), and sent to an active voice connection with the help of [discordjs](https://discord.js.org/#/). All commands utilize the [librespot-java-api](https://github.com/librespot-org/librespot-java/tree/dev/api) for player control and events
 
 ## :fox_face: Flex
 
 - 160Mb Alpine image
 - 80-150Mb memory overhead
-- < 3000ms Spotify Audio -> Discord Voice Latency
+- < 3000ms Spotify Audio to Discord Voice Latency
 - Low CPU Overhead (2% on a 5600x)
-- Control with any Spotify player the account has access to
+- Possible to control with any Spotify player the account has access to
 
 ## :headphones: Commands
 
-| Command     | Args                                | Description                         |
-| ----------- | ----------------------------------- | ----------------------------------- |
-| **join**    | -                                   | Joins voice channel of the caller   |
-| **play**    | string - spotify song/playlist link | Changes the active song/track list  |
-| **mute**    | -                                   | Mutes the Spotify playback          |
-| **pause**   | -                                   | Pauses Spotify                      |
-| **shuffle** | bool - true/false                   | Toggles shuffle                     |
-| **repeat**  | string - all/one                    |                                     |
-| **stop**    | -                                   | Stops and clears the Spotify queue  |
-| **leave**   | -                                   | Leaves voice channel, stops Spotify |
+| Prefix       | Command     | Args                                | Description                                 |
+| ------------ | ----------- | ----------------------------------- | ------------------------------------------- |
+| **!spotify** | **join**    | -                                   | Joins voice channel of the caller           |
+|              | **play**    | string - spotify song/playlist link | Changes the active song/track list          |
+|              | **mute**    | -                                   | Mutes the Spotify playback                  |
+|              | **pause**   | -                                   | Pauses Spotify                              |
+|              | **shuffle** | bool - true/false                   | Toggles shuffle                             |
+|              | **repeat**  | string - all/one                    |                                             |
+|              | **stop**    | -                                   | Stops and clears the Spotify queue          |
+|              | **leave**   | -                                   | Leaves voice channel, stops Spotify session |
 
 ## :clipboard: Notes
 
@@ -41,10 +41,10 @@ Using PulseAudio in an Alpine based image, [spotifyd](https://github.com/Spotify
   - Needs `bot` and `applications.commands` scopes
   - Use Permission integer `36702272`
   - Example invite URL: `https://discord.com/api/oauth2/authorize?client_id=<client_id>&permissions=36702272&scope=bot%20applications.commands`
-- A Spotify account, with or without premium
+- A Spotify account, **with premium**
 
 ## Secrets
 
-- secrets/discord-token - [Respective Discord bot token](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
+- secrets/discord-token - [Discord bot token from your Discord application](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
 - secrets/spotify-user - Spotify account username to use
 - secrets/spotify-passwd - Spotify account password to use
