@@ -1,5 +1,4 @@
 import path from 'path';
-import Spotify from './spotify';
 import signale from 'signale';
 import { readFileSync } from 'fs';
 import { GCommandsClient } from 'gcommands';
@@ -10,8 +9,6 @@ try {
 } catch (err) {
   signale.error(err);
 }
-
-//console.log('asd');
 
 signale.config({
   displayFilename: true,

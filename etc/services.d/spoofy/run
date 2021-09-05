@@ -1,2 +1,2 @@
 #!/usr/bin/with-contenv sh
-yarn --cwd /app start:prod
+exec yarn --cwd /app start:prod

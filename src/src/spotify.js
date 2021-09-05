@@ -58,7 +58,7 @@ export default class Spotify {
   };
 
   static restClient = purest(Spotify.restConfig);
-  static eventsSocket = new WebSocket('ws://localhost:24879/events');
+  //static eventsSocket = new WebSocket('ws://localhost:24879/events');
 
   static ParseUrl(url) {
     return spotifyUri.parse(url);
@@ -91,10 +91,11 @@ export default class Spotify {
   //private static recieveEventMessage() {}
 }
 
-Spotify.eventsSocket.on('message', (data) => {
+/* Spotify.eventsSocket.on('message', (data) => {
   const parsed = JSON.parse(data);
   const event = parsed['event'];
   if (event != undefined) {
     signale.info('Recieved %s', event);
   } else signale.info('Got %s', data);
 });
+ */

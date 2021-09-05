@@ -42,7 +42,7 @@ ARG LIBRESPOT_JAVA_RELEASE=https://github.com/librespot-org/librespot-java/relea
 RUN apk -U --no-cache add \
     libtool \
     pulseaudio \
-    dbus-x11
+    dbus
 COPY --from=spoofy-build /app/ /app
 
 # Install librespot-java
@@ -62,7 +62,6 @@ RUN apk upgrade --update --no-cache \
     && rm /tmp/s6overlay.tar.gz
 
 COPY ./etc/ /etc/
-RUN chmod 777 /etc/services.d/spoofy/run
 
 WORKDIR /
 ENTRYPOINT ["/init"]
