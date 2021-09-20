@@ -16,8 +16,8 @@ const opts = {
   rate: 48000,
   format: 's16le',
   flags: 'adjust_latency',
-  latency: 100,
-  maxTransmissionGap: 500,
+  latency: 200,
+  maxTransmissionGap: 200,
 };
 
 export default class PulsePlayer extends AudioPlayer {

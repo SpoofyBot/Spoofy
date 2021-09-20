@@ -1,18 +1,15 @@
-import { Command } from 'gcommands';
-//import signale from 'signale';
 import PulsePlayer from '../pulsePlayer';
-import { EmbedColors } from '../constants';
+import { Command } from 'gcommands';
 import { MessageEmbed } from 'discord.js';
-import { connectToChannel } from '../util';
-import { getVoiceConnections } from '@discordjs/voice';
+import spoofy, { EmbedColors, EmbedDescriptions, formatMsg } from '../spoofy';
+import { entersState, VoiceConnectionStatus, joinVoiceChannel } from '@discordjs/voice';
 
 module.exports = class extends Command {
-  constructor(...args) {
-    super(...args, {
+  constructor(client) {
+    super(client, {
       name: 'join',
-      description: 'Joins the voice channel',
-      cooldown: '5s',
-      category: 'Voice',
+      cooldown: '2s',
+      description: 'Joins the users connected voice channel',
     });
   }
 
@@ -25,40 +22,61 @@ module.exports = class extends Command {
     }
 
     embed.setColor(EmbedColors.Error);
-    if (embed.description == null) embed.setDescription(':x:  Failed to join');
     await respond({ embeds: embed, ephemeral: true });
   }
 };
 
+export async function connectToChannel(channel) {
+  const connection = joinVoiceChannel({
+    channelId: channel.id,
+    guildId: channel.guild.id,
+    adapterCreator: channel.guild.voiceAdapterCreator,
+  });
+
+  try {
+    await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
+    return connection;
+  } catch (error) {
+    connection.destroy();
+    throw error;
+  }
+}
+
 export async function joinVoice(member, embed) {
   var voiceState = member.voice;
+  var guild = voiceState.guild;
   var channel = voiceState.channel;
-  var channels = getVoiceConnections();
 
-  if (channels.size > 0) {
-    var activeChannel = channels.values().next().value;
-
-    if (activeChannel.joinConfig.channelId == channel.id) {
-      embed.setDescription(":musical_note: I'm already connected!");
-      return true;
-    }
-    // Limit to one voice connection
-    embed.setDescription(':x:  A bot isntance is already being used! Sorry :(');
-    return false;
+  var status = await spoofy.getConnectedStatus(guild, channel);
+  switch (status) {
+    case spoofy.NOT_BOUND:
+      embed.setDescription(EmbedDescriptions.NotBound);
+      return false;
+    case spoofy.ACTIVE:
+    case spoofy.ACTIVE_SAME_GUILD:
+      embed.setDescription(EmbedDescriptions.AlreadyInUse);
+      return false;
+    case spoofy.ACTIVE_SAME_VOICE_CHANNEL:
+      embed.setDescription(EmbedDescriptions.AlreadyConnected);
+      break;
+    default:
+      break;
   }
 
   if (channel == null) {
-    embed.setDescription(':x:  You need to be in a voice channel for me to join!');
+    embed.setDescription(EmbedDescriptions.RequireVoiceChannel);
     return false;
   }
 
   if (channel) {
     const connection = await connectToChannel(channel);
-
-    PulsePlayer.getPlayer().createCapture();
-    connection.subscribe(PulsePlayer.getPlayer());
-    embed.setDescription(':thumbsup:  Joined `' + channel.name + '`!');
-    return true;
+    if (connection != undefined) {
+      PulsePlayer.getPlayer().createCapture();
+      connection.subscribe(PulsePlayer.getPlayer());
+      embed.setDescription(formatMsg(':thumbsup:', 'Joined `' + channel.name + '`!'));
+      return true;
+    }
   }
+  embed.setDescription(formatMsg(':x:', 'Failed to join the voice channel'));
   return false;
 }

@@ -33,7 +33,7 @@ manualCorrection = 0 # Manual time correction in millis
 synchronizationMethod = "NTP" # Time synchronization method (NTP, PING, MELODY, MANUAL)
 
 [player] ### Player ###
-autoplayEnabled = true # Autoplay similar songs when your music ends
+autoplayEnabled = false # Autoplay similar songs when your music ends
 bypassSinkVolume = false # Whether librespot-java should ignore volume events, sink volume is set to the max
 crossfadeDuration = 0 # Crossfade overlap time (in milliseconds)
 enableNormalisation = true # Whether to apply the Spotify loudness normalisation

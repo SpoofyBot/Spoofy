@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   spoofy:
-    container_name: Spoofy
+    container_name: spoofy
     build:
       context: .
     secrets:
@@ -12,6 +12,16 @@ services:
       resources:
         limits:
           memory: 256MB
+
+  redis:
+    image: bitnami/redis:latest
+    container_name: spoofy_redis
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - '6379:6379'
+    volumes:
+      - ./spoofy-redis-data:/bitnami/redis/data
 
 secrets:
   spotify-user:
