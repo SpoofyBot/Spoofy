@@ -1,51 +1,22 @@
 {
-  "name": "spoofy",
+  "name": "spoofyjs",
   "version": "1.0",
   "author": "Twinki",
   "license": "MIT",
-  "main": "./dist/index.js",
-  "tsup": {
-    "splitting": false,
-    "sourcemap": false,
-    "clean": true,
-    "entryPoints": [
-      "src/**/*.js"
-    ]
-  },
-  "scripts": {
-    "lint": "eslint src/ --ext .js,.jsx,.ts,.tsx",
-    "start:prod": "set NODE_ENV=production && node ./dist/index.js",
-    "start": "yarn build && node ./dist/index.js",
-    "build": "tsup"
-  },
   "dependencies": {
-    "@discordjs/voice": "^0.6.0",
-    "axios": "^0.21.4",
-    "cheerio": "^1.0.0-rc.10",
-    "discord.js": "^13.1.0",
-    "gcommands": "^7.0.3-dev.1631902764",
-    "libsodium-wrappers": "^0.7.9",
-    "opusscript": "^0.0.8",
-    "pretty-ms": "^7.0.1",
-    "prism-media": "^1.3.2",
-    "pulseaudio2": "^0.5.0",
-    "purest": "^4.0.1",
-    "redis": "^4.0.0-rc.1",
-    "signale": "^1.4.0",
-    "spotify-uri": "^2.2.0",
-    "string-progressbar": "^1.0.4",
-    "ws": "^8.2.1"
+    "@discordjs/rest": "^0.3.0",
+    "discord-api-types": "^0.30.0",
+    "discord.js": "^13.6.0",
+    "gcommands": "^9.1.0",
+    "libsodium-wrappers": "^0.7.10",
+    "opusscript": "^0.0.8"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.0",
-    "@babel/eslint-parser": "^7.15.0",
-    "esbuild": "^0.11.11",
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.24.2",
-    "eslint-plugin-prettier": "^3.4.1",
-    "prettier": "^2.3.2",
-    "prettier-eslint": "^13.0.0",
-    "tsup": "^4.14.0"
+    "eslint": "^8.12.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.6.2",
+    "prettier-eslint": "^13.0.0"
   }
 }
