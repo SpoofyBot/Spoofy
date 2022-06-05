@@ -3,11 +3,14 @@
   "version": "1.0",
   "author": "Twinki",
   "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
-    "@discordjs/rest": "^0.3.0",
-    "discord-api-types": "^0.30.0",
-    "discord.js": "^13.6.0",
-    "gcommands": "^9.1.0",
+    "@discordjs/rest": "^0.5.0",
+    "discord-api-types": "^0.33.3",
+    "discord.js": "^13.7.0",
+    "gcommands": "^9.2.0",
     "libsodium-wrappers": "^0.7.10",
     "opusscript": "^0.0.8"
   },
