@@ -2,7 +2,7 @@ module.exports = {
   root: true,
   env: {
     commonjs: true,
-    es6: true,
+    es6: false,
     node: true,
   },
   parser: '@babel/eslint-parser',

@@ -1,44 +1,36 @@
 FROM node:alpine as base
 
-# Build Spoofy
-RUN apk -U --no-cache add \
-    curl
+# Build spoofy
+COPY ./src /src
+WORKDIR /src
 
-COPY ./src /app/
-WORKDIR /app
-
-# Install node-pune
-RUN curl -sf https://gobinaries.com/tj/node-prune | sh
-
-ENV NODE_ENV=production
+# Install dependencies
 RUN ["yarn", "install"]
-RUN ["node-prune"]
+RUN ["npm", "install", "-g", "pkg"]
 
-# Remove src dir, no longer needed after using tsup to build
-# RUN rm -rf src
+# Run pkg
+RUN ["yarn", "pkg", "."]
 
-# Final image
-FROM alpine AS final
+# Build final image
+FROM alpine as final
 
-ENV NODE_ENV=production
+COPY --from=base /src/dist /app
+
+ENV LIBRESPOT_PATH=/bin/librespot-api
 ARG LIBRESPOT_JAVA_RELEASE=https://github.com/librespot-org/librespot-java/releases/download/v1.6.2/librespot-api-1.6.2.jar
-
-# Copy Spoofy
-COPY --from=base /app/ /app
 
 # Install librespot-java
 ADD ${LIBRESPOT_JAVA_RELEASE} /tmp/librespot-api.jar
 RUN apk -U --no-cache add \
-    nodejs \
-    npm \
     opusfile \
     openjdk8-jre
 
 # Convert jar into executable
-RUN echo "#!/usr/bin/java -jar" > /bin/librespot-api \
-    && cat /tmp/librespot-api.jar >> /bin/librespot-api \
-    && chmod +x /bin/librespot-api \
+RUN echo "#!/usr/bin/java -jar" > ${LIBRESPOT_PATH} \
+    && cat /tmp/librespot-api.jar >> ${LIBRESPOT_PATH} \
+    && chmod +x ${LIBRESPOT_PATH} \
     && rm /tmp/librespot-api.jar
 
-WORKDIR /app
-ENTRYPOINT ["npm", "start"]
+WORKDIR /app/
+
+ENTRYPOINT ["./spoofyjs"]
