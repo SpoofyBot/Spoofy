@@ -1,11 +1,7 @@
-// spotify translation functions
+// Spotify helpers
 
 class Spotify {
-    constructor() {
-      this.databaseConnection = 'dummytext';
-    }
+  constructor() {}
+}
 
-    // spotify helpers 
-  }
-  
-  module.exports = new Spotify();
+module.exports = new Spotify();

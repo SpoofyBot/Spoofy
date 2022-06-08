@@ -1,21 +1,5 @@
 FROM node:alpine as base
 
-# Build spoofy
-COPY ./src /src
-WORKDIR /src
-
-# Install dependencies
-RUN ["yarn", "install"]
-RUN ["npm", "install", "-g", "pkg"]
-
-# Run pkg
-RUN ["yarn", "pkg", "."]
-
-# Build final image
-FROM alpine as final
-
-COPY --from=base /src/dist /app
-
 ENV LIBRESPOT_PATH=/bin/librespot-api
 ARG LIBRESPOT_JAVA_RELEASE=https://github.com/librespot-org/librespot-java/releases/download/v1.6.2/librespot-api-1.6.2.jar
 
@@ -31,6 +15,12 @@ RUN echo "#!/usr/bin/java -jar" > ${LIBRESPOT_PATH} \
     && chmod +x ${LIBRESPOT_PATH} \
     && rm /tmp/librespot-api.jar
 
+# Build spoofy
+COPY ./src /app
 WORKDIR /app/
 
-ENTRYPOINT ["./spoofyjs"]
+# Install dependencies
+RUN ["yarn", "install"]
+
+# ENTRYPOINT ["./spoofyjs"]
+ENTRYPOINT ["yarn", "start"]

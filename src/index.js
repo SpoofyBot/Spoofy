@@ -11,8 +11,8 @@ Component.setDefaults({
 
 const client = new GClient({
   dirs: [join(__dirname, 'commands')],
-  messageSupport: true,
-  messagePrefix: '!spotify ',
+  messageSupport: false,
+  messagePrefix: '!spoofy',
   devGuildId: process.env.DISCORD_DEV_SERVER,
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 });
